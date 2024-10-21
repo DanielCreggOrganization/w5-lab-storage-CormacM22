@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Storage } from '@ionic/storage-angular';
+import { StorageService } from '../services/storage.service';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 
@@ -15,14 +15,11 @@ export class HomePage {
   value: string = '';
   output: string = '';
 
-  constructor(private storage: Storage) {
-    storage.create();
-  }
+  constructor(private storageService: StorageService) {}
 
-  // Set item in storage
   async setItem() {
     try {
-      await this.storage.set(this.key, this.value);
+      await this.storageService.set(this.key, this.value);
       this.output = `Set ${this.key}: ${this.value}`;
     } catch (error) {
       console.error('Error setting item', error);
@@ -30,10 +27,9 @@ export class HomePage {
     }
   }
 
-  // Get item from storage
   async getItem() {
     try {
-      const value = await this.storage.get(this.key);
+      const value = await this.storageService.get(this.key);
       this.output = `Get ${this.key}: ${value}`;
     } catch (error) {
       console.error('Error getting item', error);
@@ -41,10 +37,9 @@ export class HomePage {
     }
   }
 
-  // Remove a specific item from storage
   async removeItem() {
     try {
-      await this.storage.remove(this.key);
+      await this.storageService.remove(this.key);
       this.output = `Removed ${this.key}`;
     } catch (error) {
       console.error('Error removing item', error);
@@ -52,10 +47,9 @@ export class HomePage {
     }
   }
 
-  // Clear all items from storage
   async clearStorage() {
     try {
-      await this.storage.clear();
+      await this.storageService.clear();
       this.output = 'Storage cleared';
     } catch (error) {
       console.error('Error clearing storage', error);
@@ -63,10 +57,9 @@ export class HomePage {
     }
   }
 
-  // Get all keys from storage
   async getKeys() {
     try {
-      const keys = await this.storage.keys();
+      const keys = await this.storageService.keys();
       this.output = `Keys: ${keys.join(', ')}`;
     } catch (error) {
       console.error('Error getting keys', error);
@@ -74,28 +67,36 @@ export class HomePage {
     }
   }
 
-  // Get the length of stored items
   async getLength() {
     try {
-      const length = await this.storage.length();
+      const length = await this.storageService.length();
       this.output = `Storage length: ${length}`;
     } catch (error) {
-      console.error('Error getting length', error);
+      console.error('Error getting storage length', error);
       this.output = `Error getting storage length: ${error}`;
     }
   }
 
-  // Iterate over all items in storage
   async iterateStorage() {
     try {
       let result = '';
-      await this.storage.forEach((value, key) => {
+      await this.storageService.forEach((value, key) => {
         result += `${key}: ${value}\n`;
       });
       this.output = `Storage contents:\n${result}`;
     } catch (error) {
       console.error('Error iterating storage', error);
       this.output = `Error iterating storage: ${error}`;
+    }
+  }
+
+  async checkExists() {
+    try {
+      const exists = await this.storageService.exists(this.key);
+      this.output = exists ? `Key "${this.key}" exists` : `Key "${this.key}" does not exist`;
+    } catch (error) {
+      console.error('Error checking if key exists', error);
+      this.output = `Error checking if key exists: ${error}`;
     }
   }
 }
